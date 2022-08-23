@@ -1,4 +1,4 @@
-### Lokasi file konfigurasi
+### Config Path
     %APPDATA%/mpv
 
 ### Plugin List
