@@ -25,7 +25,7 @@ default config `"Anime4K: Mode B (Fast)" (active)`
  CTRL+7 no-osd change-list glsl-shaders set "~~/shaders/FSR.glsl"; show-text "FSR Active"
  ```
 ## NVScaler
-required NVIDIA GPU
+NVIDIA GPU required
 ```
 CTRL+8 no-osd change-list glsl-shaders set "~~/shaders/NVScaler.glsl"; show-text "NVScaler Active"
 ```
