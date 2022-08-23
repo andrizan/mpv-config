@@ -8,9 +8,9 @@
 - change-OSD-media-title.lua
 - delete_file.lua
 - mpv_thumbnail_script_client_osc.lua
-- mpv_thumbnail_script_server.lua (3 script)
+- mpv_thumbnail_script_server.lua (3 script) [config file "%APPDATA%/mpv/script-opts/mpv_thumbnail_script.conf"]
 - pause-when-minimize.lua
-- playlistmanager.lua
+- playlistmanager.lua [config file "%APPDATA%/mpv/script-opts/playlistmanager.conf"]
 - show_chapters.lua
 ```
 
