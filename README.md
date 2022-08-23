@@ -8,7 +8,7 @@
 - change-OSD-media-title.lua
 - delete_file.lua
 - mpv_thumbnail_script_client_osc.lua
-- mpv_thumbnail_script_server.lua (3 script) [config file "%APPDATA%/mpv/script-opts/mpv_thumbnail_script.conf"]
+- mpv_thumbnail_script_server.lua (disabled) [config file "%APPDATA%/mpv/script-opts/mpv_thumbnail_script.conf"]
 - pause-when-minimize.lua
 - playlistmanager.lua [config file "%APPDATA%/mpv/script-opts/playlistmanager.conf"]
 - show_chapters.lua
@@ -19,7 +19,7 @@ config file
 ```
 %APPDATA%/mpv/input.conf
 ```
-default config `"Anime4K: Mode B (Fast)" (active)`
+default config `"FSR" (active)`
 ## [FSR](https://gist.github.com/agyild/82219c545228d70c5604f865ce0b0ce5)
  ```
  CTRL+7 no-osd change-list glsl-shaders set "~~/shaders/FSR.glsl"; show-text "FSR Active"
