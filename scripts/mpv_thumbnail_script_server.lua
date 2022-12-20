@@ -15,9 +15,9 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 --[[
-    mpv_thumbnail_script.lua 0.5.1 - commit 9a52b96 (branch master)
+    mpv_thumbnail_script.lua 0.5.2 - commit f82a221 (branch master)
     https://github.com/TheAMM/mpv_thumbnail_script
-    Built on 2022-07-19 07:59:46
+    Built on 2022-12-11 16:42:58
 ]]--
 local assdraw = require 'mp.assdraw'
 local msg = require 'mp.msg'
@@ -377,6 +377,8 @@ local thumbnailer_options = {
     mpv_profile = "",
     -- Hardware decoding
     mpv_hwdec = "no",
+    -- High precision seek
+    mpv_hr_seek = "yes",
     -- Output debug logs to <thumbnail_path>.log, ala <cache_directory>/<video_filename>/000000.bgra.log
     -- The logs are removed after successful encodes, unless you set mpv_keep_logs below
     mpv_logs = true,
@@ -452,6 +454,8 @@ local thumbnailer_options = {
 
     -- Allow thumbnailing network paths (naive check for "://")
     thumbnail_network = false,
+    -- Same as autogenerate_max_duration but for remote videos
+    remote_autogenerate_max_duration = 1200, -- 20 min
     -- Override thumbnail count, min/max delta
     remote_thumbnail_count = 60,
     remote_min_delta = 15,
@@ -461,10 +465,12 @@ local thumbnailer_options = {
     -- Much faster than passing the url to ytdl again, but may cause problems with some sites
     remote_direct_stream = true,
 
-    -- Enable storyboards (requires yt-dlp in PATH). Currently only supports YouTube
+    -- Enable storyboards (requires yt-dlp in PATH). Currently only supports YouTube and Twitch VoDs
     storyboard_enable = true,
     -- Max thumbnails for storyboards. It only skips processing some of the downloaded thumbnails and doesn't make it much faster
     storyboard_max_thumbnail_count = 800,
+    -- Most storyboard thumbnails are 160x90. Enabling this allows upscaling them up to thumbnail_height
+    storyboard_upscale = false,
 }
 
 read_options(thumbnailer_options, SCRIPT_NAME)
@@ -520,12 +526,14 @@ function create_thumbnail_mpv(file_path, timestamp, size, output_path, options)
 
         "--start=" .. tostring(timestamp),
         "--frames=1",
-        "--hr-seek=yes",
+        "--hr-seek=" .. thumbnailer_options.mpv_hr_seek,
         "--no-audio",
         -- Optionally disable subtitles
         (thumbnailer_options.mpv_no_sub and "--no-sub" or nil),
 
-        (options.no_scale == nil and ("--vf=scale=%d:%d"):format(size.w, size.h) or nil),
+        (options.relative_scale == nil
+                and ("--vf=scale=%d:%d"):format(size.w, size.h)
+                or ("--vf=scale=iw*%d:ih*%d"):format(size.w, size.h)),
 
         "--vf-add=format=bgra",
         "--of=rawvideo",
@@ -539,7 +547,7 @@ end
 function create_thumbnail_ffmpeg(file_path, timestamp, size, output_path, options)
     options = options or {}
 
-    local ffmpeg_command = skip_nil({
+    local ffmpeg_command = {
         "ffmpeg",
         "-loglevel", "quiet",
         "-noaccurate_seek",
@@ -549,13 +557,17 @@ function create_thumbnail_ffmpeg(file_path, timestamp, size, output_path, option
         "-frames:v", "1",
         "-an",
 
-        (options.no_scale == nil and "-vf" or nil), (options.no_scale == nil and ("scale=%d:%d"):format(size.w, size.h) or nil),
+        "-vf",
+        (options.relative_scale == nil
+                and ("scale=%d:%d"):format(size.w, size.h)
+                or ("scale=iw*%d:ih*%d"):format(size.w, size.h)),
+
         "-c:v", "rawvideo",
         "-pix_fmt", "bgra",
         "-f", "rawvideo",
 
         "-y", output_path
-    })
+    }
     return utils.subprocess({args=ffmpeg_command})
 end
 
@@ -695,7 +707,7 @@ function do_worker_job(state_json_string, frames_json_string)
                 if url == nil then
                     url = thumb_state.storyboard.fragment_base_url .. "/" .. thumb_state.storyboard.fragments[atlas_idx+1].path
                 end
-                local ret = thumbnail_func(url, 0, thumb_state.thumbnail_size, atlas_path, { no_scale=true })
+                local ret = thumbnail_func(url, 0, { w=thumb_state.storyboard.scale, h=thumb_state.storyboard.scale }, atlas_path, { relative_scale=true })
                 success = check_output(ret, atlas_path, thumbnail_func == create_thumbnail_mpv)
                 if success then
                     split_atlas(atlas_path, cols, thumb_state.thumbnail_size, function(idx)

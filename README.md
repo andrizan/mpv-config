@@ -24,11 +24,6 @@ default config `"FSR" (active)`
  ```
  CTRL+7 no-osd change-list glsl-shaders set "~~/shaders/FSR.glsl"; show-text "FSR Active"
  ```
-## [NVScaler](https://gist.github.com/agyild/7e8951915b2bf24526a9343d951db214)
-NVIDIA GPU required
-```
-CTRL+8 no-osd change-list glsl-shaders set "~~/shaders/NVScaler.glsl"; show-text "NVScaler Active"
-```
 ## [Anime4K (v4)](https://github.com/bloc97/Anime4K)
 ### Optimized shaders for lower-end GPU:
 (Eg. GTX 980, GTX 1060, RX 570)
