@@ -8,14 +8,17 @@
 - change-OSD-media-title.lua
 - delete_file.lua
 - mpv_thumbnail_script_client_osc.lua
-- mpv_thumbnail_script_server.lua (disabled) [config file "%APPDATA%/mpv/script-opts/mpv_thumbnail_script.conf"]
+- mpv_thumbnail_script_server.lua [config file "%APPDATA%/mpv/script-opts/mpv_thumbnail_script.conf"]
 - pause-when-minimize.lua
 - playlistmanager.lua [config file "%APPDATA%/mpv/script-opts/playlistmanager.conf"]
 - show_chapters.lua
 ```
 
 # Upscaler
-config file
+- [FSR](https://gist.github.com/agyild/82219c545228d70c5604f865ce0b0ce5) (AMD FidelityFX Super Resolution v1.0.2)
+- [NVScaler](https://gist.github.com/agyild/7e8951915b2bf24526a9343d951db214) (NVIDIA Image Scaling v1.0.2)
+
+<!-- config file
 ```
 %APPDATA%/mpv/input.conf
 ```
@@ -63,4 +66,4 @@ CTRL+0 no-osd change-list glsl-shaders clr ""; show-text "GLSL shaders cleared"
 This is what you should see (this example is from v2.0RC2, but also applies to newer versions):
 ![Anime4K](https://raw.githubusercontent.com/bloc97/Anime4K/master/results/MPV_Profiler.png)
 
-3. For advanced usage and more customization options, see the [Advanced Usage Instructions](https://github.com/bloc97/Anime4K/blob/master/md/GLSL_Instructions_Advanced.md) page.
+3. For advanced usage and more customization options, see the [Advanced Usage Instructions](https://github.com/bloc97/Anime4K/blob/master/md/GLSL_Instructions_Advanced.md) page. -->
