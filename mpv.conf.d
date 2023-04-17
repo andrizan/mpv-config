@@ -8,12 +8,18 @@ screenshot-template="%F-%p-%#n"
 title='${filename} - mpv'
 osc=no
 
-vo=gpu
-gpu-api=d3d11
-hwdec=d3d11va
+mpv_hwdec=auto-safe
+
+gpu-api=vulkan
+vulkan-async-transfer=yes
+vulkan-async-compute=yes
+# vo=gpu
+hwdec=nvdec
+
+scale=ewa_lanczossharp
+cscale=ewa_lanczossharp
 video-sync=display-resample
 
-glsl-shaders="~~/shaders/NVScaler.glsl"
 tscale=oversample
 volume-max=200
 
