@@ -15,20 +15,24 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]--
 --[[
-    mpv_thumbnail_script.lua 0.5.2 - commit f82a221 (branch master)
+    mpv_thumbnail_script.lua 0.5.3 - commit 6b42232 (branch master)
     https://github.com/TheAMM/mpv_thumbnail_script
-    Built on 2022-12-11 16:42:58
+    Built on 2023-10-19 11:12:04
 ]]--
 local assdraw = require 'mp.assdraw'
 local msg = require 'mp.msg'
 local opt = require 'mp.options'
 local utils = require 'mp.utils'
 
--- Determine platform --
+-- Determine if the platform is Windows --
 ON_WINDOWS = (package.config:sub(1,1) ~= '/')
 
+-- Determine if the platform is MacOS --
+local uname = io.popen("uname -s"):read("*l")
+ON_MAC = not ON_WINDOWS and (uname == "Mac" or uname == "Darwin")
+
 -- Some helper functions needed to parse the options --
-function isempty(v) return (v == false) or (v == nil) or (v == "") or (v == 0) or (type(v) == "table" and next(v) == nil) end
+function isempty(v) return not v or (v == "") or (v == 0) or (type(v) == "table" and not next(v)) end
 
 function divmod (a, b)
   return math.floor(a / b), a % b
@@ -59,7 +63,7 @@ function split_path( path )
   local sep = ON_WINDOWS and "\\" or "/"
   local first_index, last_index = path:find('^.*' .. sep)
 
-  if last_index == nil then
+  if not last_index then
     return "", path
   else
     local dir = path:sub(0, last_index-1)
@@ -107,10 +111,10 @@ end
 
 function file_exists(name)
   local f = io.open(name, "rb")
-  if f ~= nil then
+  if f then
     local ok, err, code = f:read(1)
     io.close(f)
-    return code == nil
+    return not code
   else
     return false
   end
@@ -118,7 +122,7 @@ end
 
 function path_exists(name)
   local f = io.open(name, "rb")
-  if f ~= nil then
+  if f then
     io.close(f)
     return true
   else
@@ -162,7 +166,7 @@ local ExecutableFinder = { path_cache = {} }
 function ExecutableFinder:get_executable_path( name, raw_name )
   name = ON_WINDOWS and not raw_name and (name .. ".exe") or name
 
-  if self.path_cache[name] == nil then
+  if not self.path_cache[name] then
     self.path_cache[name] = find_executable(name) or false
   end
   return self.path_cache[name]
@@ -170,8 +174,8 @@ end
 
 -- Format seconds to HH.MM.SS.sss
 function format_time(seconds, sep, decimals)
-  decimals = decimals == nil and 3 or decimals
-  sep = sep and sep or "."
+  decimals = decimals or 3
+  sep = sep or "."
   local s = seconds
   local h, s = divmod(s, 60*60)
   local m, s = divmod(s, 60)
@@ -183,8 +187,8 @@ end
 
 -- Format seconds to 1h 2m 3.4s
 function format_time_hms(seconds, sep, decimals, force_full)
-  decimals = decimals == nil and 1 or decimals
-  sep = sep ~= nil and sep or " "
+  decimals = decimals or 1
+  sep = sep or " "
 
   local s = seconds
   local h, s = divmod(s, 60*60)
@@ -276,7 +280,7 @@ function get_processor_count()
     proc_count = tonumber(os.getenv("NUMBER_OF_PROCESSORS"))
   else
     local cpuinfo_handle = io.open("/proc/cpuinfo")
-    if cpuinfo_handle ~= nil then
+    if cpuinfo_handle then
       local cpuinfo_contents = cpuinfo_handle:read("*a")
       local _, replace_count = cpuinfo_contents:gsub('processor', '')
       proc_count = replace_count
@@ -285,8 +289,6 @@ function get_processor_count()
 
   if proc_count and proc_count > 0 then
       return proc_count
-  else
-    return nil
   end
 end
 
@@ -502,8 +504,10 @@ function create_thumbnail_mpv(file_path, timestamp, size, output_path, options)
 
     local log_arg = "--log-file=" .. output_path .. ".log"
 
-    local mpv_command = skip_nil({
-        "mpv",
+    local mpv_path = ON_MAC and "/opt/homebrew/bin/mpv" or "mpv"
+
+    local mpv_command = skip_nil{
+        mpv_path,
         -- Hide console output
         "--msg-level=all=no",
 
@@ -522,8 +526,6 @@ function create_thumbnail_mpv(file_path, timestamp, size, output_path, options)
         profile_arg,
         (thumbnailer_options.mpv_logs and log_arg or nil),
 
-        file_path,
-
         "--start=" .. tostring(timestamp),
         "--frames=1",
         "--hr-seek=" .. thumbnailer_options.mpv_hr_seek,
@@ -531,24 +533,30 @@ function create_thumbnail_mpv(file_path, timestamp, size, output_path, options)
         -- Optionally disable subtitles
         (thumbnailer_options.mpv_no_sub and "--no-sub" or nil),
 
-        (options.relative_scale == nil
-                and ("--vf=scale=%d:%d"):format(size.w, size.h)
-                or ("--vf=scale=iw*%d:ih*%d"):format(size.w, size.h)),
+        (options.relative_scale
+                and ("--vf=scale=iw*%d:ih*%d"):format(size.w, size.h)
+                or ("--vf=scale=%d:%d"):format(size.w, size.h)),
 
         "--vf-add=format=bgra",
         "--of=rawvideo",
         "--ovc=rawvideo",
-        ("--o=%s"):format(output_path)
-    })
-    return utils.subprocess({args=mpv_command})
+        ("--o=%s"):format(output_path),
+
+        "--",
+
+        file_path,
+    }
+    return mp.command_native{name="subprocess", args=mpv_command}
 end
 
 
 function create_thumbnail_ffmpeg(file_path, timestamp, size, output_path, options)
     options = options or {}
 
+    local ffmpeg_path = ON_MAC and "/opt/homebrew/bin/ffmpeg" or "ffmpeg"
+
     local ffmpeg_command = {
-        "ffmpeg",
+        ffmpeg_path,
         "-loglevel", "quiet",
         "-noaccurate_seek",
         "-ss", format_time(timestamp, ":"),
@@ -558,17 +566,17 @@ function create_thumbnail_ffmpeg(file_path, timestamp, size, output_path, option
         "-an",
 
         "-vf",
-        (options.relative_scale == nil
-                and ("scale=%d:%d"):format(size.w, size.h)
-                or ("scale=iw*%d:ih*%d"):format(size.w, size.h)),
+        (options.relative_scale
+                and ("scale=iw*%d:ih*%d"):format(size.w, size.h)
+                or ("scale=%d:%d"):format(size.w, size.h)),
 
         "-c:v", "rawvideo",
         "-pix_fmt", "bgra",
         "-f", "rawvideo",
 
-        "-y", output_path
+        "-y", output_path,
     }
-    return utils.subprocess({args=ffmpeg_command})
+    return mp.command_native{name="subprocess", args=ffmpeg_command}
 end
 
 
@@ -616,12 +624,12 @@ function split_atlas(atlas_path, cols, thumbnail_size, output_name)
         local x_start = (pic % cols) * thumbnail_size.w
         local y_start = math.floor(pic / cols) * thumbnail_size.h
         local filename = output_name(pic)
-        if filename ~= nil then
+        if filename then
             local thumb_file = io.open(filename, "wb")
             for line = 0, thumbnail_size.h - 1 do
                 atlas:seek("set", 4 * x_start + (y_start + line) * stride)
                 local data = atlas:read(thumbnail_size.w * 4)
-                if data ~= nil then
+                if data then
                     thumb_file:write(data)
                 end
             end
@@ -657,7 +665,7 @@ function do_worker_job(state_json_string, frames_json_string)
     local file_duration = mp.get_property_native("duration")
     local file_path = thumb_state.worker_input_path
 
-    if thumb_state.is_remote and thumb_state.storyboard == nil then
+    if thumb_state.is_remote and not thumb_state.storyboard then
         if (thumbnail_func == create_thumbnail_ffmpeg) then
             msg.warn("Thumbnailing remote path, falling back on mpv.")
         end
@@ -682,7 +690,7 @@ function do_worker_job(state_json_string, frames_json_string)
 
         -- Check if the thumbnail already exists and is the correct size
         local thumbnail_file = io.open(thumbnail_path, "rb")
-        if thumbnail_file == nil then
+        if not thumbnail_file then
             need_thumbnail_generation = true
         else
             local existing_thumbnail_filesize = thumbnail_file:seek("end")
@@ -696,7 +704,7 @@ function do_worker_job(state_json_string, frames_json_string)
 
         if need_thumbnail_generation then
             local success
-            if thumb_state.storyboard ~= nil then
+            if thumb_state.storyboard then
                 -- get atlas and then split it into thumbnails
                 local rows = thumb_state.storyboard.rows
                 local cols = thumb_state.storyboard.cols
@@ -704,7 +712,7 @@ function do_worker_job(state_json_string, frames_json_string)
                 local atlas_idx = math.floor(thumb_idx * div /(cols*rows))
                 local atlas_path = thumb_state.thumbnail_template:format(atlas_idx) .. ".atlas"
                 local url = thumb_state.storyboard.fragments[atlas_idx+1].url
-                if url == nil then
+                if not url then
                     url = thumb_state.storyboard.fragment_base_url .. "/" .. thumb_state.storyboard.fragments[atlas_idx+1].path
                 end
                 local ret = thumbnail_func(url, 0, { w=thumb_state.storyboard.scale, h=thumb_state.storyboard.scale }, atlas_path, { relative_scale=true })
@@ -723,7 +731,7 @@ function do_worker_job(state_json_string, frames_json_string)
                 success = check_output(ret, thumbnail_path, thumbnail_func == create_thumbnail_mpv)
             end
 
-            if success == nil then
+            if not success then
                 -- Killed by us, changing files, ignore
                 msg.debug("Changing files, subprocess killed")
                 return true
@@ -741,7 +749,7 @@ function do_worker_job(state_json_string, frames_json_string)
         thumbnail_file = io.open(thumbnail_path, "rb")
 
         -- Bail if we can't read the file (it should really exist by now, we checked this in check_output!)
-        if thumbnail_file == nil then
+        if not thumbnail_file then
             msg.error("Thumbnail suddenly disappeared!")
             return true
         end
