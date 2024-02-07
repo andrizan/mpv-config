@@ -9,6 +9,7 @@
 - [delete_current_file.lua](https://github.com/stax76/mpv-scripts/blob/main/delete_current_file.lua)
 - [thumbfast.lua](https://github.com/po5/thumbfast) `%APPDATA%/mpv/script-opts/thumbfast.conf`
 - [playlistmanager.lua](https://github.com/jonniek/mpv-playlistmanager) `%APPDATA%/mpv/script-opts/playlistmanager.conf`
+- show_chapters.lua
 <!-- - [osc.lua](https://github.com/mpv-player/mpv/blob/master/player/lua/osc.lua) -->
 
 ## Upscaler
