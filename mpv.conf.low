@@ -20,7 +20,10 @@ tscale=oversample
 tscale-clamp=0.0  # make sure it doesn't blur during slow interpolation
 
 ## GLSL shaders for anime upscaling
-glsl-shaders="~~/shaders/nnedi3-nns128-win8x4.hook;~~/shaders/ArtCNN_C4F32.glsl"
+scale=ewa_lanczossharp
+cscale=ewa_lanczossharp
+dscale=mitchell
+glsl-shaders="~~/shaders/FSR.glsl"
 
 ## Dithering (smoother color gradients)
 dither-depth=auto
