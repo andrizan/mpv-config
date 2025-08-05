@@ -1,50 +1,54 @@
 profile=high-quality
 
-## Screenshot
-screenshot-dir="~~/screenshots"
+screenshot-dir="C:\Users\andrizan\Pictures\Anime"
 screenshot-format=png
 screenshot-png-compression=8
 screenshot-template="%F-%p-%#n"
 
-## UI dan Judul
-osc=no
 title='${filename} - mpv'
+osc=no
 
-## Output video
 vo=gpu-next
 gpu-api=d3d11
 hwdec=d3d11va
 video-sync=display-resample
-interpolation=yes
-tscale=oversample
-tscale-clamp=0.0  # pastikan tidak blur saat interpolasi lambat
 
-## GLSL shaders untuk upscaling anime
+# vo=gpu
+# gpu-api=opengl
+# hwdec=nvdec
+# video-sync=display-resample
+
+# vo=gpu-next
+# gpu-api=vulkan
+# hwdec=vulkan
+# video-sync=display-resample
+
+#glsl-shaders="~~/shaders/FSR.glsl"
+# glsl-shaders="~~/shaders/NVScaler.glsl"
 glsl-shaders="~~/shaders/nnedi3-nns128-win8x4.hook;~~/shaders/ArtCNN_C4F32.glsl"
+tscale=oversample
+volume-max=200
 
-## Dithering (gradasi warna lebih smooth)
 dither-depth=auto
 dither=fruit
 error-diffusion=sierra-lite
 
-## Volume
-volume-max=200
-
-## Audio dan Subtitle Preference
+#Audio language priority
 alang=ja,jp,jpn,en,eng,de,deu,ger
+
+#Subtitle language priority
 slang=id,ind,en,eng,de,deu,ger
 subs-with-matching-audio=yes
 
-## Subtitle styling
 sub-ass-override=force
-sub-font="Lexend Bold"
-sub-scale=1.0
+sub-font='Lexend Bold'
+# sub-bold=yes
+# sub-color='#ffffff'
+sub-scale=0.9
 sub-border-size=3
 sub-border-color="#000000"
-sub-shadow-offset=1
-sub-shadow-color="#000000"
-sub-font-size=45
+# sub-shadow-offset=2
+# sub-shadow-color="#000000"
 
-## Warna dan gamma
 target-trc=srgb
 vf=format:gamma=gamma2.2
