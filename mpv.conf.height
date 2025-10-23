@@ -1,0 +1,56 @@
+profile=high-quality
+
+## Screenshot
+screenshot-dir="~~/screenshots"
+screenshot-format=png
+screenshot-png-compression=8
+screenshot-template="%F-%p-%#n"
+
+## UI and Title
+osc=no
+title='${filename} - mpv'
+
+## Video Output
+vo=gpu-next
+gpu-api=vulkan
+gpu-context=winvk
+hwdec=d3d11va-copy
+vulkan-async-transfer=yes
+vulkan-swap-mode=mailbox
+
+scale-antiring=0.1
+sigmoid-upscaling=yes
+
+video-sync=display-resample
+interpolation=yes
+tscale=oversample
+tscale-clamp=0.0  # make sure it doesn't blur during slow interpolation
+
+## GLSL shaders for anime upscaling
+glsl-shaders="~~/shaders/nnedi3-nns128-win8x4.hook;~~/shaders/ArtCNN_C4F32.glsl"
+
+## Dithering (smoother color gradients)
+dither-depth=auto
+dither=fruit
+error-diffusion=sierra-lite
+
+## Volume
+volume-max=200
+
+## Audio and Subtitle Preference
+alang=ja,jp,jpn,en,eng,de,deu,ger
+slang=id,ind,en,eng,de,deu,ger
+subs-with-matching-audio=yes
+
+## Subtitle styling
+sub-ass-override=force
+sub-font="Lexend Bold"
+sub-scale=1.0
+sub-border-size=3
+sub-border-color="#000000"
+sub-shadow-offset=1
+sub-shadow-color="#000000"
+sub-font-size=45
+
+## color and gamma
+target-trc=srgb
