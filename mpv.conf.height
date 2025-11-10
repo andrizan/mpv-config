@@ -1,56 +1,278 @@
-profile=high-quality
+## ===================================================================
+## MPV Configuration - Optimized untuk RTX 4060 + Ryzen 9 9900X
+## High-end PC dengan AI Upscaling Shaders
+## ===================================================================
 
-## Screenshot
-screenshot-dir="~~/screenshots"
+profile=gpu-hq
+
+## ===================================================================
+## Screenshot Settings
+## ===================================================================
+screenshot-directory="~/Pictures/mpv-screenshots"
 screenshot-format=png
 screenshot-png-compression=8
 screenshot-template="%F-%p-%#n"
+screenshot-high-bit-depth=yes
 
-## UI and Title
-osc=no
-title='${filename} - mpv'
+## ===================================================================
+## UI and Window
+## ===================================================================
+osc=yes
+osd-font-size=32
+osd-bar-h=2
+osd-border-size=1
+title='${media-title} - mpv'
+keep-open=yes
+force-window=immediate
 
-## Video Output
+## ===================================================================
+## Video Output - Vulkan (Optimal untuk RTX 4060)
+## ===================================================================
 vo=gpu-next
 gpu-api=vulkan
 gpu-context=winvk
-hwdec=d3d11va-copy
+
+## Hardware Decoding - NVDEC untuk RTX 4060
+hwdec=nvdec-copy
+hwdec-codecs=all
+vd-lavc-dr=yes
+
+## Vulkan Optimizations untuk RTX 4060
+vulkan-async-compute=yes
 vulkan-async-transfer=yes
-vulkan-swap-mode=mailbox
+vulkan-queue-count=1
 
-scale-antiring=0.1
+## GPU Shader Cache
+gpu-shader-cache-dir="~~/shader_cache"
+
+## ===================================================================
+## Scaling - High Quality untuk AI Upscaling
+## ===================================================================
+scale=ewa_lanczossharp
+cscale=ewa_lanczossharp
+dscale=mitchell
+scale-antiring=0.7
+cscale-antiring=0.7
 sigmoid-upscaling=yes
+correct-downscaling=yes
+linear-downscaling=yes
 
+## ===================================================================
+## AI Upscaling Shaders - NNEDI3 + ArtCNN
+## ===================================================================
+glsl-shaders="~~/shaders/nnedi3-nns128-win8x4.hook;~~/shaders/ArtCNN_C4F32.glsl"
+
+## Shader optimization untuk RTX 4060
+gpu-dumb-mode=no
+fbo-format=rgba16hf
+
+## ===================================================================
+## Frame Timing & Interpolation
+## ===================================================================
 video-sync=display-resample
 interpolation=yes
 tscale=oversample
-tscale-clamp=0.0  # make sure it doesn't blur during slow interpolation
+tscale-window=sphinx
+tscale-radius=1.0
+tscale-clamp=0.0
 
-## GLSL shaders for anime upscaling
-glsl-shaders="~~/shaders/nnedi3-nns128-win8x4.hook;~~/shaders/ArtCNN_C4F32.glsl"
-
-## Dithering (smoother color gradients)
+## ===================================================================
+## Dithering - Maximum Quality
+## ===================================================================
 dither-depth=auto
 dither=fruit
 error-diffusion=sierra-lite
+temporal-dither=yes
 
-## Volume
-volume-max=200
+## ===================================================================
+## Debanding - Essential untuk Anime
+## ===================================================================
+deband=yes
+deband-iterations=4
+deband-threshold=48
+deband-range=16
+deband-grain=48
 
-## Audio and Subtitle Preference
-alang=ja,jp,jpn,en,eng,de,deu,ger
-slang=id,ind,en,eng,de,deu,ger
+## ===================================================================
+## Color Management
+## ===================================================================
+target-trc=auto
+target-prim=auto
+target-peak=auto
+tone-mapping=bt.2390
+gamut-mapping-mode=clip
+
+## HDR Support
+hdr-compute-peak=yes
+hdr-contrast-recovery=0.30
+
+## ===================================================================
+## Cache - Balanced untuk Startup Cepat & Streaming Smooth
+## ===================================================================
+cache=yes
+demuxer-max-bytes=150M
+demuxer-max-back-bytes=75M
+demuxer-readahead-secs=10
+demuxer-mkv-subtitle-preroll=yes
+demuxer-mkv-subtitle-preroll-secs=1
+
+## Network cache (hanya untuk streaming)
+cache-secs=10
+stream-buffer-size=4M
+
+## ===================================================================
+## Audio Settings
+## ===================================================================
+volume=100
+volume-max=150
+audio-channels=stereo
+audio-normalize-downmix=yes
+audio-pitch-correction=yes
+audio-file-auto=fuzzy
+
+## ===================================================================
+## Language Preferences
+## ===================================================================
+alang=ja,jp,jpn,en,eng,id,ind
+slang=id,ind,en,eng,ja,jp,jpn
 subs-with-matching-audio=yes
+sub-auto=fuzzy
+sub-file-paths=ass:srt:sub:subs:subtitles
 
-## Subtitle styling
-sub-ass-override=force
+## ===================================================================
+## Subtitle Styling
+## ===================================================================
+sub-ass-style-overrides=Kerning=yes
 sub-font="Lexend Bold"
+sub-font-size=46
 sub-scale=1.0
-sub-border-size=3
+sub-bold=yes
+sub-border-size=2
 sub-border-color="#000000"
-sub-shadow-offset=1
-sub-shadow-color="#000000"
-sub-font-size=45
+sub-shadow-offset=0.5
+sub-shadow-color="#33000000"
+sub-margin-y=40
+sub-margin-x=100
 
-## color and gamma
-target-trc=srgb
+## ASS subtitle settings
+sub-ass-force-margins=yes
+
+## ===================================================================
+## Performance Tweaks - Ryzen 9 9900X
+## ===================================================================
+vd-lavc-threads=12
+# vd-lavc-software-fallback=no sudah tidak diperlukan dengan hwdec
+
+## ===================================================================
+## OSD/OSC Customization
+## ===================================================================
+osd-level=1
+osd-duration=2000
+osd-playing-msg='${filename}'
+
+## ===================================================================
+## Profiles untuk Berbagai Use Cases
+## ===================================================================
+
+[4k-native]
+profile-desc="Untuk video 4K native (matikan upscaling)"
+glsl-shaders=""
+scale=spline36
+cscale=spline36
+deband-iterations=2
+
+[anime-1080p]
+profile-desc="Optimal untuk anime 1080p dengan AI upscaling"
+glsl-shaders="~~/shaders/nnedi3-nns128-win8x4.hook;~~/shaders/ArtCNN_C4F32.glsl"
+deband=yes
+deband-iterations=4
+
+[anime-720p]
+profile-desc="Untuk anime 720p dengan aggressive upscaling"
+glsl-shaders="~~/shaders/nnedi3-nns128-win8x4.hook;~~/shaders/ArtCNN_C4F32.glsl"
+scale=ewa_lanczossharp
+deband=yes
+
+[low-quality-source]
+profile-desc="Untuk source berkualitas rendah (heavy denoise)"
+glsl-shaders="~~/shaders/nnedi3-nns128-win8x4.hook;~~/shaders/ArtCNN_C4F32.glsl"
+deband=yes
+deband-iterations=4
+deband-threshold=64
+deband-range=20
+
+[streaming]
+profile-desc="Untuk streaming online (cache lebih besar)"
+cache=yes
+demuxer-max-bytes=300M
+demuxer-readahead-secs=20
+stream-buffer-size=8M
+hls-bitrate=max
+ytdl-format=bestvideo[height<=?1080]+bestaudio/best
+
+[performance]
+profile-desc="Performance mode (disable heavy features)"
+glsl-shaders=""
+interpolation=no
+deband=no
+scale=spline36
+cscale=spline36
+
+[max-quality]
+profile-desc="Maximum quality (berat)"
+scale=ewa_lanczossharp
+cscale=ewa_lanczossharp
+scale-antiring=0.7
+cscale-antiring=0.7
+deband-iterations=4
+deband-threshold=48
+interpolation=yes
+
+## ===================================================================
+## Auto Profiles - Berdasarkan Resolusi
+## ===================================================================
+
+[1080p-upscale]
+profile-cond=height<=1080
+profile-desc="Auto-apply untuk video ≤1080p"
+glsl-shaders="~~/shaders/nnedi3-nns128-win8x4.hook;~~/shaders/ArtCNN_C4F32.glsl"
+
+[4k-content]
+profile-cond=height>1080 and height<=2160
+profile-desc="Auto-apply untuk video 4K"
+glsl-shaders=""
+scale=spline36
+
+## ===================================================================
+## Protocol Specific
+## ===================================================================
+
+[protocol.http]
+profile=streaming
+user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+referrer="https://www.google.com/"
+
+[protocol.https]
+profile=streaming
+user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+
+[protocol.ytdl]
+profile=streaming
+ytdl-format=bestvideo[height<=?1080][vcodec!=vp9]+bestaudio/best
+
+## ===================================================================
+## Extension Specific
+## ===================================================================
+
+[extension.webm]
+loop-file=inf
+
+[extension.gif]
+loop-file=inf
+interpolation=no
+
+[extension.mkv]
+demuxer-mkv-subtitle-preroll=yes
+
+[extension.mp4]
+demuxer-lavf-analyzeduration=10
