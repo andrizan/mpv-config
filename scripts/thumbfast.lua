@@ -945,6 +945,18 @@ mp.observe_property("duration", "native", on_duration)
 mp.register_script_message("thumb", thumb)
 mp.register_script_message("clear", clear)
 
+mp.observe_property("user-data/osc/draw-preview", "native", function(_, req)
+    if req == nil then
+        clear()
+        return
+    end
+
+    local time = req["hover-sec"]
+    if time == nil then return end
+
+    thumb(time, req.x or "", req.y or "")
+end)
+
 mp.register_event("file-loaded", file_load)
 mp.register_event("shutdown", shutdown)
 
