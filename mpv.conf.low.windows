@@ -1,0 +1,215 @@
+## ===================================================================
+## MPV Low Configuration - Windows laptop
+## HP Pavilion Gaming 15-ec0001ax
+## Ryzen 5 3550H, 8GB RAM, GTX 1050 3GB, 15.6" FHD
+## mpv v0.41.x
+## ===================================================================
+
+## Screenshot
+screenshot-dir="~~/screenshots"
+screenshot-format=png
+screenshot-png-compression=8
+screenshot-template="%F-%p-%#n"
+screenshot-high-bit-depth=yes
+
+## UI and Title
+osc=no
+osd-font-size=28
+osd-border-size=1
+title='${filename} - mpv'
+keep-open=no
+
+## ===================================================================
+## Video Output - Windows stable default
+## ===================================================================
+vo=gpu-next
+gpu-api=d3d11
+gpu-context=d3d11
+
+## If Windows exposes a different adapter name, comment this line.
+d3d11-adapter="NVIDIA GeForce GTX 1050"
+d3d11-output-format=auto
+d3d11-output-csp=auto
+d3d11va-zero-copy=no
+d3d11-exclusive-fs=no
+
+## Hardware decoding
+## D3D11VA is the correct low-risk pair for gpu-api=d3d11.
+## Do not use nvdec/cuda with D3D11 as default.
+hwdec=d3d11va
+hwdec-codecs=h264,hevc,vp8,vp9
+hwdec-extra-frames=6
+vd-lavc-threads=0
+
+## Shader cache
+gpu-shader-cache=yes
+gpu-shader-cache-dir="~~/shader_cache"
+
+## ===================================================================
+## Performance-first rendering
+## ===================================================================
+video-sync=audio
+interpolation=no
+
+## No default GLSL shader. FSR/ArtCNN/NNEDI3 are too heavy for GTX 1050
+## 3GB and 8GB RAM as daily defaults.
+glsl-shaders=""
+
+scale=spline36
+cscale=bilinear
+dscale=bilinear
+scale-antiring=0.6
+correct-downscaling=yes
+linear-downscaling=no
+sigmoid-upscaling=no
+
+## Disable by default to save GPU headroom.
+deband=no
+
+## Light dithering
+dither-depth=auto
+dither=fruit
+
+## Color management
+target-trc=auto
+target-prim=auto
+target-peak=auto
+target-colorspace-hint=auto
+tone-mapping=auto
+gamut-mapping-mode=auto
+hdr-compute-peak=no
+
+## ===================================================================
+## Cache - safe for 8GB RAM
+## ===================================================================
+cache=yes
+demuxer-max-bytes=75M
+demuxer-max-back-bytes=25M
+demuxer-readahead-secs=5
+stream-buffer-size=2M
+cache-secs=5
+
+## ===================================================================
+## Audio and Subtitle Preference
+## ===================================================================
+volume=100
+volume-max=150
+audio-channels=auto-safe
+audio-pitch-correction=yes
+audio-file-auto=fuzzy
+
+alang=ja,jp,jpn,en,eng,id,ind
+slang=id,ind,en,eng,ja,jp,jpn
+subs-with-matching-audio=yes
+sub-auto=fuzzy
+sub-file-paths=ass:srt:sub:subs:subtitles
+
+## Subtitle styling
+sub-ass-style-overrides=Kerning=yes
+sub-fonts-dir="~~/fonts"
+sub-font="Lexend Bold"
+sub-font-size=40
+sub-scale=1.0
+sub-bold=yes
+sub-border-size=2
+sub-border-color="#000000"
+sub-shadow-offset=0.5
+sub-shadow-color="#33000000"
+sub-margin-y=36
+
+## ===================================================================
+## Optional Profiles
+## scripts/power-profile.lua otomatis memilih:
+## - battery saat charger dicabut
+## - full-performance saat charging/AC tersambung
+##
+## Jalankan contoh:
+## mpv --profile=battery "video.mkv"
+## mpv --profile=full-performance "video.mkv"
+## ===================================================================
+
+[vulkan-nvdec]
+profile-desc="Optional GTX 1050 test mode: Vulkan + NVDEC"
+gpu-api=vulkan
+gpu-context=winvk
+vulkan-device="NVIDIA GeForce GTX 1050"
+hwdec=nvdec,auto-safe
+
+[battery]
+profile-desc="Mode baterai: hemat daya, suhu lebih rendah, cache lebih kecil"
+d3d11-adapter=""
+gpu-api=d3d11
+gpu-context=d3d11
+hwdec=d3d11va
+hwdec-extra-frames=4
+video-sync=audio
+interpolation=no
+glsl-shaders=""
+scale=bilinear
+cscale=bilinear
+dscale=bilinear
+scale-antiring=0
+correct-downscaling=no
+linear-downscaling=no
+sigmoid-upscaling=no
+dither=no
+deband=no
+hdr-compute-peak=no
+cache=yes
+demuxer-max-bytes=50M
+demuxer-max-back-bytes=15M
+demuxer-readahead-secs=3
+stream-buffer-size=1M
+cache-secs=3
+
+[baterai]
+profile-desc="Alias Indonesia untuk mode baterai"
+profile=battery
+
+[bateray]
+profile-desc="Alias typo untuk mode baterai"
+profile=battery
+
+[full-performance]
+profile-desc="Mode full performa: GTX 1050, scaler lebih bagus, cache lebih lega"
+d3d11-adapter="NVIDIA GeForce GTX 1050"
+gpu-api=d3d11
+gpu-context=d3d11
+hwdec=d3d11va
+hwdec-extra-frames=8
+video-sync=audio
+interpolation=no
+glsl-shaders=""
+scale=spline36
+cscale=spline36
+dscale=mitchell
+scale-antiring=0.7
+cscale-antiring=0.7
+correct-downscaling=yes
+linear-downscaling=yes
+sigmoid-upscaling=yes
+dither-depth=auto
+dither=fruit
+deband=yes
+deband-iterations=2
+deband-threshold=32
+deband-range=12
+deband-grain=16
+hdr-compute-peak=yes
+cache=yes
+demuxer-max-bytes=150M
+demuxer-max-back-bytes=50M
+demuxer-readahead-secs=10
+stream-buffer-size=4M
+cache-secs=10
+
+[full-performa]
+profile-desc="Alias Indonesia untuk full performance"
+profile=full-performance
+
+[compat-auto]
+profile-desc="Fallback if forced NVIDIA adapter fails"
+d3d11-adapter=""
+gpu-api=auto
+gpu-context=auto
+hwdec=auto-safe

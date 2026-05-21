@@ -1,0 +1,200 @@
+## ===================================================================
+## MPV Low Configuration - Linux/CachyOS laptop
+## HP Pavilion Gaming 15-ec0001ax
+## Ryzen 5 3550H, 8GB RAM, GTX 1050 3GB, 15.6" FHD
+## ===================================================================
+
+## Screenshot
+screenshot-dir="~~/screenshots"
+screenshot-format=png
+screenshot-png-compression=8
+screenshot-template="%F-%p-%#n"
+screenshot-high-bit-depth=yes
+
+## UI and Title
+osc=no
+osd-font-size=28
+osd-border-size=1
+title='${filename} - mpv'
+keep-open=no
+
+## ===================================================================
+## Video Output - Linux hybrid-safe default
+## ===================================================================
+vo=gpu-next
+gpu-api=vulkan
+
+## gpu-context sengaja tidak dipaksa.
+## mpv akan memilih Wayland Vulkan atau X11 Vulkan sesuai sesi desktop.
+
+## Hardware decoding
+## auto-safe lebih aman untuk laptop hybrid AMD iGPU + NVIDIA dGPU.
+## Untuk memaksa GTX 1050/NVDEC, pakai profile [nvidia-nvdec].
+hwdec=auto-safe
+hwdec-codecs=h264,hevc,vp8,vp9
+hwdec-extra-frames=6
+vd-lavc-threads=0
+
+## Shader cache
+gpu-shader-cache=yes
+gpu-shader-cache-dir="~~/shader_cache"
+
+## ===================================================================
+## Performance-first rendering
+## ===================================================================
+video-sync=audio
+interpolation=no
+
+## Tidak pakai GLSL shader default. FSR/ArtCNN/NNEDI3 terlalu berat
+## untuk GTX 1050 3GB dan RAM 8GB sebagai default harian.
+glsl-shaders=""
+
+scale=spline36
+cscale=bilinear
+dscale=bilinear
+scale-antiring=0.6
+correct-downscaling=yes
+linear-downscaling=no
+sigmoid-upscaling=no
+
+## Debanding dimatikan default untuk hemat GPU.
+deband=no
+
+## Dithering ringan
+dither-depth=auto
+dither=fruit
+
+## Color management
+target-trc=auto
+target-prim=auto
+target-peak=auto
+tone-mapping=auto
+gamut-mapping-mode=auto
+hdr-compute-peak=no
+
+## ===================================================================
+## Cache - hemat RAM untuk 8GB
+## ===================================================================
+cache=yes
+demuxer-max-bytes=75M
+demuxer-max-back-bytes=25M
+demuxer-readahead-secs=5
+stream-buffer-size=2M
+cache-secs=5
+
+## ===================================================================
+## Audio and Subtitle Preference
+## ===================================================================
+volume=100
+volume-max=150
+audio-channels=auto-safe
+audio-pitch-correction=yes
+audio-file-auto=fuzzy
+
+alang=ja,jp,jpn,en,eng,id,ind
+slang=id,ind,en,eng,ja,jp,jpn
+subs-with-matching-audio=yes
+sub-auto=fuzzy
+sub-file-paths=ass:srt:sub:subs:subtitles
+
+## Subtitle styling
+sub-ass-style-overrides=Kerning=yes
+sub-fonts-dir="~~/fonts"
+sub-font="Lexend Bold"
+sub-font-size=40
+sub-scale=1.0
+sub-bold=yes
+sub-border-size=2
+sub-border-color="#000000"
+sub-shadow-offset=0.5
+sub-shadow-color="#33000000"
+sub-margin-y=36
+
+## ===================================================================
+## Optional Profiles
+## scripts/power-profile.lua otomatis memilih:
+## - battery saat charger dicabut
+## - full-performance saat charging/AC tersambung
+##
+## Jalankan contoh:
+## mpv --profile=battery "video.mkv"
+## mpv --profile=full-performance "video.mkv"
+## ===================================================================
+
+[nvidia-nvdec]
+profile-desc="CachyOS NVIDIA dGPU mode: Vulkan + NVDEC"
+gpu-api=vulkan
+hwdec=nvdec,auto-safe
+
+[battery]
+profile-desc="Mode baterai: hemat daya, suhu lebih rendah, cache lebih kecil"
+gpu-api=vulkan
+hwdec=auto-safe
+hwdec-extra-frames=4
+video-sync=audio
+interpolation=no
+glsl-shaders=""
+scale=bilinear
+cscale=bilinear
+dscale=bilinear
+scale-antiring=0
+correct-downscaling=no
+linear-downscaling=no
+sigmoid-upscaling=no
+dither=no
+deband=no
+hdr-compute-peak=no
+cache=yes
+demuxer-max-bytes=50M
+demuxer-max-back-bytes=15M
+demuxer-readahead-secs=3
+stream-buffer-size=1M
+cache-secs=3
+
+[baterai]
+profile-desc="Alias Indonesia untuk mode baterai"
+profile=battery
+
+[bateray]
+profile-desc="Alias typo untuk mode baterai"
+profile=battery
+
+[full-performance]
+profile-desc="Mode full performa: Vulkan + NVDEC, scaler lebih bagus, cache lebih lega"
+gpu-api=vulkan
+hwdec=nvdec,auto-safe
+hwdec-extra-frames=8
+video-sync=audio
+interpolation=no
+glsl-shaders=""
+scale=spline36
+cscale=spline36
+dscale=mitchell
+scale-antiring=0.7
+cscale-antiring=0.7
+correct-downscaling=yes
+linear-downscaling=yes
+sigmoid-upscaling=yes
+dither-depth=auto
+dither=fruit
+deband=yes
+deband-iterations=2
+deband-threshold=32
+deband-range=12
+deband-grain=16
+hdr-compute-peak=yes
+cache=yes
+demuxer-max-bytes=150M
+demuxer-max-back-bytes=50M
+demuxer-readahead-secs=10
+stream-buffer-size=4M
+cache-secs=10
+
+[full-performa]
+profile-desc="Alias Indonesia untuk full performance"
+profile=full-performance
+
+[compat-opengl]
+profile-desc="Fallback kalau Vulkan bermasalah di driver/session Linux"
+gpu-api=opengl
+hwdec=nvdec,auto-safe
