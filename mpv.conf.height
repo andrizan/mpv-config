@@ -1,6 +1,6 @@
 ## ===================================================================
-## MPV Configuration - Optimized untuk RTX 4060 + Ryzen 9 9900X
-## High-end PC dengan AI Upscaling Shaders
+## MPV Configuration - Optimized untuk mpv v0.41.0
+## RTX 4060 + Ryzen 9 9900X, default stabil di Windows
 ## ===================================================================
 
 profile=gpu-hq
@@ -25,22 +25,27 @@ title='${media-title} - mpv'
 keep-open=yes
 force-window=immediate
 
+
 ## ===================================================================
-## Video Output - Vulkan (Optimal untuk RTX 4060)
+## Video Output - D3D11 (stabil untuk Windows + RTX 4060)
 ## ===================================================================
 vo=gpu-next
-gpu-api=vulkan
-gpu-context=winvk
+gpu-api=d3d11
+gpu-context=d3d11
+d3d11-adapter="NVIDIA GeForce RTX 4060"
+d3d11-output-format=auto
+d3d11-output-csp=auto
+d3d11va-zero-copy=no
+d3d11-exclusive-fs=no
+background-color="#000000"
 
-## Hardware Decoding - NVDEC untuk RTX 4060
-hwdec=nvdec-copy
-hwdec-codecs=all
-vd-lavc-dr=yes
+## Hardware Decoding - pasangan yang benar untuk gpu-api=d3d11
+## Jangan pakai nvdec/cuda di backend D3D11; itu memicu error CUDA.
+hwdec=d3d11va
 
-## Vulkan Optimizations untuk RTX 4060
-vulkan-async-compute=yes
-vulkan-async-transfer=yes
-vulkan-queue-count=1
+## Catatan:
+## Jika ingin uji Vulkan/NVDEC, jalankan:
+## mpv --profile=vulkan-nvdec "video.mkv"
 
 ## GPU Shader Cache
 gpu-shader-cache-dir="~~/shader_cache"
@@ -60,7 +65,8 @@ linear-downscaling=yes
 ## ===================================================================
 ## AI Upscaling Shaders - NNEDI3 + ArtCNN
 ## ===================================================================
-glsl-shaders="~~/shaders/nnedi3-nns128-win8x4.hook;~~/shaders/ArtCNN_C4F32.glsl"
+# glsl-shaders="~~/shaders/nnedi3-nns128-win8x4.hook;~~/shaders/ArtCNN_C4F32.glsl"
+glsl-shaders="~~/shaders/FSR.glsl"
 
 ## Shader optimization untuk RTX 4060
 gpu-dumb-mode=no
@@ -85,13 +91,13 @@ error-diffusion=sierra-lite
 temporal-dither=yes
 
 ## ===================================================================
-## Debanding - Essential untuk Anime
+## Debanding - tuned supaya minim banding tanpa over-smoothing
 ## ===================================================================
 deband=yes
 deband-iterations=4
-deband-threshold=48
+deband-threshold=40
 deband-range=16
-deband-grain=48
+deband-grain=28
 
 ## ===================================================================
 ## Color Management
@@ -99,8 +105,9 @@ deband-grain=48
 target-trc=auto
 target-prim=auto
 target-peak=auto
-tone-mapping=bt.2390
-gamut-mapping-mode=clip
+target-colorspace-hint=auto
+tone-mapping=auto
+gamut-mapping-mode=auto
 
 ## HDR Support
 hdr-compute-peak=yes
@@ -125,7 +132,7 @@ stream-buffer-size=4M
 ## ===================================================================
 volume=100
 volume-max=150
-audio-channels=stereo
+audio-channels=auto-safe
 audio-normalize-downmix=yes
 audio-pitch-correction=yes
 audio-file-auto=fuzzy
@@ -143,6 +150,7 @@ sub-file-paths=ass:srt:sub:subs:subtitles
 ## Subtitle Styling
 ## ===================================================================
 sub-ass-style-overrides=Kerning=yes
+sub-fonts-dir="~~/fonts"
 sub-font="Lexend Bold"
 sub-font-size=46
 sub-scale=1.0
@@ -160,8 +168,8 @@ sub-ass-force-margins=yes
 ## ===================================================================
 ## Performance Tweaks - Ryzen 9 9900X
 ## ===================================================================
-vd-lavc-threads=12
-# vd-lavc-software-fallback=no sudah tidak diperlukan dengan hwdec
+vd-lavc-threads=0
+# hwdec akan fallback ke software decode otomatis jika format tidak didukung GPU.
 
 ## ===================================================================
 ## OSD/OSC Customization
@@ -218,12 +226,20 @@ deband=no
 scale=spline36
 cscale=spline36
 
+[vulkan-nvdec]
+profile-desc="Eksperimen untuk RTX 4060: Vulkan + NVDEC"
+gpu-api=vulkan
+gpu-context=winvk
+vulkan-device="NVIDIA GeForce RTX 4060"
+hwdec=nvdec,auto-safe
+
 [max-quality]
 profile-desc="Maximum quality (berat)"
 scale=ewa_lanczossharp
 cscale=ewa_lanczossharp
 scale-antiring=0.7
 cscale-antiring=0.7
+glsl-shaders="~~/shaders/nnedi3-nns128-win8x4.hook;~~/shaders/ArtCNN_C4F32.glsl"
 deband-iterations=4
 deband-threshold=48
 interpolation=yes
@@ -233,8 +249,13 @@ interpolation=yes
 ## ===================================================================
 
 [1080p-upscale]
-profile-cond=height<=1080
-profile-desc="Auto-apply untuk video ≤1080p"
+profile-cond=height>720 and height<=1080
+profile-desc="Auto-apply untuk 721p-1080p (ringan)"
+glsl-shaders="~~/shaders/ArtCNN_C4F32.glsl"
+
+[720p-upscale]
+profile-cond=height<=720
+profile-desc="Auto-apply untuk <=720p (upscale lebih agresif)"
 glsl-shaders="~~/shaders/nnedi3-nns128-win8x4.hook;~~/shaders/ArtCNN_C4F32.glsl"
 
 [4k-content]
