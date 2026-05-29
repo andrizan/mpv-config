@@ -98,6 +98,7 @@ sub-auto=fuzzy
 sub-file-paths=ass:srt:sub:subs:subtitles
 
 ## Subtitle styling
+sub-ass-override=force
 sub-ass-style-overrides=Kerning=yes
 sub-fonts-dir="~~/fonts"
 sub-font="Lexend Bold"
