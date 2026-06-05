@@ -99,10 +99,10 @@ sub-file-paths=ass:srt:sub:subs:subtitles
 
 ## Subtitle styling
 sub-ass-override=force
-sub-ass-style-overrides=Kerning=yes
+sub-ass-style-overrides=Kerning=yes,Bold=1,Fontname=Gandhi Sans,Fontsize=46,ScaleX=100,ScaleY=100
 sub-fonts-dir="~~/fonts"
-sub-font="Lexend Bold"
-sub-font-size=40
+sub-font="Gandhi Sans"
+sub-font-size=46
 sub-scale=1.0
 sub-bold=yes
 sub-border-size=2
