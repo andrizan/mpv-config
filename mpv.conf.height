@@ -151,7 +151,7 @@ sub-file-paths=ass:srt:sub:subs:subtitles
 ## ===================================================================
 sub-ass-override=force
 ## Override hanya style "Default" (dialog bawah tengah)
-sub-ass-style-overrides=Default.Fontname=Gandhi Sans,Default.Fontsize=46,Default.Bold=1,Default.Kerning=yes
+sub-ass-style-overrides=Default.Fontname=Gandhi Sans,Default.Fontsize=30,Default.Bold=1,Default.Kerning=yes
 sub-fonts-dir="~~/fonts"
 sub-font="Gandhi Sans"
 sub-font-size=46
