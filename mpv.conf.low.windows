@@ -105,9 +105,14 @@ sub-auto=fuzzy
 sub-file-paths=ass:srt:sub:subs:subtitles
 
 ## Subtitle styling
-sub-ass-override=force
-## Override hanya style "Default" (dialog bawah tengah)
-sub-ass-style-overrides=Default.Fontname=Gandhi Sans,Default.Fontsize=30,Default.Bold=1,Default.Kerning=yes
+## scale (bukan force): style lain (catatan, papan, dll.) tetap pakai ukuran/warna/font
+## asli subtitle, jadi rasio ukuran antar-style tidak berubah.
+sub-ass-override=scale
+## Override hanya style "Default" (dialog bawah tengah). Fontsize sengaja tidak di-override:
+## ukuran absolut membuat style lain (catatan/papan) jadi tidak proporsional.
+sub-ass-style-overrides=Default.Fontname=Gandhi Sans,Default.Bold=1,Default.Kerning=yes
+## Ukuran subtitle diatur proporsional lewat sub-scale (juga untuk papan/signs).
+sub-scale-signs=yes
 sub-fonts-dir="~~/fonts"
 sub-font="Gandhi Sans"
 sub-font-size=46
