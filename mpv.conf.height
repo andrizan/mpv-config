@@ -149,9 +149,15 @@ sub-file-paths=ass:srt:sub:subs:subtitles
 ## ===================================================================
 ## Subtitle Styling
 ## ===================================================================
-sub-ass-override=force
-## Override hanya style "Default" (dialog bawah tengah)
-sub-ass-style-overrides=Default.Fontname=Gandhi Sans,Default.Fontsize=30,Default.Bold=1,Default.Kerning=yes
+## scale (bukan force): ukuran/warna style lain (catatan, papan, dll.) tetap sesuai
+## subtitle asli, jadi rasio ukuran antar-style tidak berubah.
+sub-ass-override=scale
+## Font family + bold berlaku ke semua style. Fontsize sengaja tidak di-override
+## (ukuran absolut membuat style lain tidak proporsional); ukuran dialog utama
+## diatur scripts/sub-size-normalize.lua lewat sub-scale agar selalu = sub-font-size.
+sub-ass-style-overrides=Fontname=Gandhi Sans,Bold=1,Default.Kerning=yes
+## sub-scale juga berlaku untuk papan/signs, supaya rasio ke dialog tetap.
+sub-scale-signs=yes
 sub-fonts-dir="~~/fonts"
 sub-font="Gandhi Sans"
 sub-font-size=46

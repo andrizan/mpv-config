@@ -75,6 +75,7 @@ Catatan Windows: `mpv.conf.low.windows` memaksa `d3d11-adapter="NVIDIA GeForce G
 - [thumbfast.lua](https://github.com/po5/thumbfast) `%APPDATA%\mpv\script-opts\thumbfast.conf`
 - [playlistmanager.lua](https://github.com/jonniek/mpv-playlistmanager) `%APPDATA%\mpv\script-opts\playlistmanager.conf`
 - `power-profile.lua`
+- `sub-size-normalize.lua` (menjaga dialog ASS selalu seukuran `sub-font-size`; style catatan/papan tetap proporsional ke ukuran aslinya)
 - `show_chapters.lua`
 - [osc.lua](https://github.com/mpv-player/mpv/blob/master/player/lua/osc.lua)
 
