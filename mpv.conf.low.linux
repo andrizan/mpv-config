@@ -73,14 +73,14 @@ gamut-mapping-mode=auto
 hdr-compute-peak=no
 
 ## ===================================================================
-## Cache - hemat RAM untuk 8GB
+## Cache - dilonggarkan untuk streaming; turunkan jika RAM terbatas
 ## ===================================================================
 cache=yes
-demuxer-max-bytes=75M
-demuxer-max-back-bytes=25M
-demuxer-readahead-secs=5
+demuxer-max-bytes=300M
+demuxer-max-back-bytes=100M
+demuxer-readahead-secs=20
 stream-buffer-size=2M
-cache-secs=5
+cache-secs=20
 
 ## ===================================================================
 ## Audio and Subtitle Preference
@@ -129,8 +129,9 @@ gpu-api=vulkan
 hwdec=nvdec,auto-safe
 
 [battery]
-profile-desc="Mode baterai: hemat daya, suhu lebih rendah, cache lebih kecil"
+profile-desc="Mode baterai: render di iGPU Vega + VA-API, tanpa FSR/deband"
 gpu-api=vulkan
+vulkan-device="AMD Radeon Vega 8 Graphics (RADV RAVEN)"
 hwdec=auto-safe
 hwdec-extra-frames=4
 video-sync=audio
@@ -147,11 +148,11 @@ dither=no
 deband=no
 hdr-compute-peak=no
 cache=yes
-demuxer-max-bytes=50M
-demuxer-max-back-bytes=15M
-demuxer-readahead-secs=3
+demuxer-max-bytes=150M
+demuxer-max-back-bytes=50M
+demuxer-readahead-secs=10
 stream-buffer-size=1M
-cache-secs=3
+cache-secs=10
 
 [baterai]
 profile-desc="Alias Indonesia untuk mode baterai"
@@ -164,6 +165,7 @@ profile=battery
 [full-performance]
 profile-desc="Mode full performa: Vulkan + NVDEC, scaler lebih bagus, cache lebih lega"
 gpu-api=vulkan
+vulkan-device="NVIDIA GeForce GTX 1050"
 hwdec=nvdec,auto-safe
 hwdec-extra-frames=8
 video-sync=audio
@@ -186,11 +188,11 @@ deband-range=12
 deband-grain=16
 hdr-compute-peak=yes
 cache=yes
-demuxer-max-bytes=150M
-demuxer-max-back-bytes=50M
-demuxer-readahead-secs=10
+demuxer-max-bytes=500M
+demuxer-max-back-bytes=150M
+demuxer-readahead-secs=30
 stream-buffer-size=4M
-cache-secs=10
+cache-secs=30
 
 [full-performa]
 profile-desc="Alias Indonesia untuk full performance"
