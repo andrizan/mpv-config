@@ -45,9 +45,10 @@ gpu-shader-cache-dir="~~/shader_cache"
 video-sync=audio
 interpolation=no
 
-## Tidak pakai GLSL shader default. FSR/ArtCNN/NNEDI3 terlalu berat
-## untuk GTX 1050 3GB dan RAM 8GB sebagai default harian.
-glsl-shaders=""
+## Default: ArtCNN C4F16 (ringan, ~42 fps di 720p->1080p pada GTX 1050).
+## ArtCNN C4F32/NNEDI3 terlalu berat untuk GTX 1050 3GB sebagai default harian.
+## Aktif hanya kalau output >= 1.3x resolusi sumber; FSR tetap di Ctrl+2.
+glsl-shaders="~~/shaders/ArtCNN_C4F16.glsl"
 
 scale=spline36
 cscale=bilinear
@@ -176,7 +177,6 @@ hwdec=nvdec,auto-safe
 hwdec-extra-frames=8
 video-sync=audio
 interpolation=no
-glsl-shaders=""
 scale=spline36
 cscale=spline36
 dscale=mitchell
