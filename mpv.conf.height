@@ -186,6 +186,13 @@ osd-duration=2000
 osd-playing-msg='${filename}'
 
 ## ===================================================================
+## Scripts
+## ===================================================================
+## Desktop tanpa baterai, dan preset ini tidak punya profile battery/full-performance.
+## Tanpa ini power-profile.lua menjalankan PowerShell (~0.3 detik) tiap 10 detik tanpa efek.
+script-opts-append=power-profile-enabled=no
+
+## ===================================================================
 ## Profiles untuk Berbagai Use Cases
 ## ===================================================================
 
