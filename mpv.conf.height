@@ -3,6 +3,8 @@
 ## RTX 4060 + Ryzen 9 9900X, default stabil di Windows
 ## ===================================================================
 
+## gpu-hq sudah mengatur scale, dither-depth, error-diffusion, dan sigmoid/linear/correct-downscaling;
+## opsi yang nilainya sama dengan default mpv sengaja tidak ditulis ulang.
 profile=gpu-hq
 
 ## ===================================================================
@@ -12,12 +14,10 @@ screenshot-directory="~/Pictures/mpv-screenshots"
 screenshot-format=png
 screenshot-png-compression=8
 screenshot-template="%F-%p-%#n"
-screenshot-high-bit-depth=yes
 
 ## ===================================================================
 ## UI and Window
 ## ===================================================================
-osc=yes
 osd-font-size=32
 osd-bar-h=2
 osd-border-size=1
@@ -33,15 +33,11 @@ vo=gpu-next
 gpu-api=d3d11
 gpu-context=d3d11
 d3d11-adapter="NVIDIA GeForce RTX 4060"
-d3d11-output-format=auto
-d3d11-output-csp=auto
-d3d11va-zero-copy=no
-d3d11-exclusive-fs=no
-background-color="#000000"
 
 ## Hardware Decoding - pasangan yang benar untuk gpu-api=d3d11
 ## Jangan pakai nvdec/cuda di backend D3D11; itu memicu error CUDA.
 hwdec=d3d11va
+## hwdec fallback ke software decode otomatis jika format tidak didukung GPU.
 
 ## Catatan:
 ## Jika ingin uji Vulkan/NVDEC, jalankan:
@@ -53,19 +49,17 @@ gpu-shader-cache-dir="~~/shader_cache"
 ## ===================================================================
 ## Scaling - High Quality untuk AI Upscaling
 ## ===================================================================
-scale=ewa_lanczossharp
 cscale=ewa_lanczossharp
 dscale=mitchell
 scale-antiring=0.7
 cscale-antiring=0.7
-sigmoid-upscaling=yes
-correct-downscaling=yes
-linear-downscaling=yes
 
 ## ===================================================================
 ## AI Upscaling Shader - ArtCNN C4F32 DS
 ## ===================================================================
-# glsl-shaders="~~/shaders/nnedi3-nns128-win8x4.hook;~~/shaders/ArtCNN_C4F32.glsl"
+## Satu-satunya shader. Hook ArtCNN punya syarat WHEN (output >=1.3x luma), jadi otomatis tidak
+## jalan untuk video >=1080p di layar 1080p; tidak perlu profile per resolusi. Jangan dirantai
+## dengan nnedi3: setelah luma digandakan, ArtCNN tidak lagi memenuhi syaratnya.
 glsl-shaders="~~/shaders/ArtCNN_C4F32_DS.glsl"
 
 ## Shader optimization untuk RTX 4060
@@ -85,9 +79,6 @@ tscale-clamp=0.0
 ## ===================================================================
 ## Dithering - Maximum Quality
 ## ===================================================================
-dither-depth=auto
-dither=fruit
-error-diffusion=sierra-lite
 temporal-dither=yes
 
 ## ===================================================================
@@ -96,32 +87,20 @@ temporal-dither=yes
 deband=yes
 deband-iterations=4
 deband-threshold=40
-deband-range=16
 deband-grain=28
 
 ## ===================================================================
-## Color Management
-## ===================================================================
-target-trc=auto
-target-prim=auto
-target-peak=auto
-target-colorspace-hint=auto
-tone-mapping=auto
-gamut-mapping-mode=auto
-
 ## HDR Support
+## ===================================================================
 hdr-compute-peak=yes
-hdr-contrast-recovery=0.30
 
 ## ===================================================================
 ## Cache - Balanced untuk Startup Cepat & Streaming Smooth
 ## ===================================================================
 cache=yes
-demuxer-max-bytes=150M
 demuxer-max-back-bytes=75M
 demuxer-readahead-secs=10
 demuxer-mkv-subtitle-preroll=yes
-demuxer-mkv-subtitle-preroll-secs=1
 
 ## Network cache (hanya untuk streaming)
 cache-secs=10
@@ -130,11 +109,8 @@ stream-buffer-size=4M
 ## ===================================================================
 ## Audio Settings
 ## ===================================================================
-volume=100
 volume-max=150
-audio-channels=auto-safe
 audio-normalize-downmix=yes
-audio-pitch-correction=yes
 audio-file-auto=fuzzy
 
 ## ===================================================================
@@ -142,7 +118,6 @@ audio-file-auto=fuzzy
 ## ===================================================================
 alang=ja,jp,jpn,en,eng,id,ind
 slang=id,ind,en,eng,ja,jp,jpn
-subs-with-matching-audio=yes
 sub-auto=fuzzy
 sub-file-paths=ass:srt:sub:subs:subtitles
 
@@ -161,10 +136,8 @@ sub-scale-signs=yes
 sub-fonts-dir="~~/fonts"
 sub-font="Gandhi Sans"
 sub-font-size=46
-sub-scale=1.0
 sub-bold=yes
 sub-border-size=2
-sub-border-color="#000000"
 sub-shadow-offset=0.5
 sub-shadow-color="#33000000"
 sub-margin-y=36
@@ -173,15 +146,8 @@ sub-margin-y=36
 sub-ass-force-margins=yes
 
 ## ===================================================================
-## Performance Tweaks - Ryzen 9 9900X
-## ===================================================================
-vd-lavc-threads=0
-# hwdec akan fallback ke software decode otomatis jika format tidak didukung GPU.
-
-## ===================================================================
 ## OSD/OSC Customization
 ## ===================================================================
-osd-level=1
 osd-duration=2000
 osd-playing-msg='${filename}'
 
@@ -203,33 +169,16 @@ scale=spline36
 cscale=spline36
 deband-iterations=2
 
-[anime-1080p]
-profile-desc="Optimal untuk anime 1080p dengan AI upscaling"
-glsl-shaders="~~/shaders/ArtCNN_C4F32_DS.glsl"
-deband=yes
-deband-iterations=4
-
-[anime-720p]
-profile-desc="Untuk anime 720p dengan aggressive upscaling"
-glsl-shaders="~~/shaders/ArtCNN_C4F32_DS.glsl"
-scale=ewa_lanczossharp
-deband=yes
-
 [low-quality-source]
 profile-desc="Untuk source berkualitas rendah (heavy denoise)"
-glsl-shaders="~~/shaders/ArtCNN_C4F32_DS.glsl"
-deband=yes
-deband-iterations=4
 deband-threshold=64
 deband-range=20
 
 [streaming]
 profile-desc="Untuk streaming online (cache lebih besar)"
-cache=yes
 demuxer-max-bytes=300M
 demuxer-readahead-secs=20
 stream-buffer-size=8M
-hls-bitrate=max
 ytdl-format=bestvideo[height<=?1080]+bestaudio/best
 
 [performance]
@@ -249,36 +198,7 @@ hwdec=nvdec,auto-safe
 
 [max-quality]
 profile-desc="Maximum quality (berat)"
-scale=ewa_lanczossharp
-cscale=ewa_lanczossharp
-scale-antiring=0.7
-cscale-antiring=0.7
-glsl-shaders="~~/shaders/ArtCNN_C4F32_DS.glsl"
-deband-iterations=4
 deband-threshold=48
-interpolation=yes
-
-## ===================================================================
-## Auto Profiles - Berdasarkan Resolusi
-## ===================================================================
-
-[1080p-upscale]
-profile-cond=height>720 and height<=1080
-profile-desc="Auto-apply untuk 721p-1080p (ringan)"
-glsl-shaders="~~/shaders/ArtCNN_C4F32_DS.glsl"
-
-[720p-upscale]
-profile-cond=height<=720
-profile-desc="Auto-apply untuk <=720p (upscale lebih agresif)"
-## ArtCNN DS (denoise + sharpen) tanpa nnedi3: setelah nnedi3 menggandakan luma, syarat
-## WHEN ArtCNN (output >=1.3x) tidak terpenuhi di layar 1080p, jadi ArtCNN tidak jalan jika dirantai.
-glsl-shaders="~~/shaders/ArtCNN_C4F32_DS.glsl"
-
-[4k-content]
-profile-cond=height>1080 and height<=2160
-profile-desc="Auto-apply untuk video 4K"
-glsl-shaders=""
-scale=spline36
 
 ## ===================================================================
 ## Protocol Specific
@@ -307,9 +227,6 @@ loop-file=inf
 [extension.gif]
 loop-file=inf
 interpolation=no
-
-[extension.mkv]
-demuxer-mkv-subtitle-preroll=yes
 
 [extension.mp4]
 demuxer-lavf-analyzeduration=10
