@@ -86,7 +86,7 @@ Pakai `mpv.conf.low.windows` atau `mpv.conf.low.linux` jika perangkat terbatas. 
 - [FSR](https://gist.github.com/agyild/82219c545228d70c5604f865ce0b0ce5) (AMD FidelityFX Super Resolution v1.0.2)
 - [nnedi3](https://github.com/bjin/mpv-prescalers/blob/master/compute/nnedi3-nns128-win8x4.hook) (nnedi3-nns128-win8x4)
 - [ArtCNN](https://github.com/Artoriuz/ArtCNN/blob/main/GLSL/ArtCNN_C4F32.glsl) (ArtCNN-C4F32)
-- [ArtCNN](https://github.com/Artoriuz/ArtCNN/blob/main/GLSL/ArtCNN_C4F32_DS.glsl) (ArtCNN-C4F32-DS, denoise + sharpen; dipakai di profile `[720p-upscale]` pada `mpv.conf.height`)
+- [ArtCNN](https://github.com/Artoriuz/ArtCNN/blob/main/GLSL/ArtCNN_C4F32_DS.glsl) (ArtCNN-C4F32-DS, denoise + sharpen; satu-satunya shader yang dipakai `mpv.conf.height`)
 - [ArtCNN](https://github.com/Artoriuz/ArtCNN/blob/main/GLSL/ArtCNN_C4F16.glsl) (ArtCNN-C4F16, default di `mpv.conf.low.linux`; `Ctrl+3`)
 <!-- - [NVScaler](https://gist.github.com/agyild/7e8951915b2bf24526a9343d951db214) (NVIDIA Image Scaling v1.0.2) -->
 

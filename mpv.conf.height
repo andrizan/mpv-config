@@ -63,10 +63,10 @@ correct-downscaling=yes
 linear-downscaling=yes
 
 ## ===================================================================
-## AI Upscaling Shaders - NNEDI3 + ArtCNN
+## AI Upscaling Shader - ArtCNN C4F32 DS
 ## ===================================================================
 # glsl-shaders="~~/shaders/nnedi3-nns128-win8x4.hook;~~/shaders/ArtCNN_C4F32.glsl"
-glsl-shaders="~~/shaders/FSR.glsl"
+glsl-shaders="~~/shaders/ArtCNN_C4F32_DS.glsl"
 
 ## Shader optimization untuk RTX 4060
 gpu-dumb-mode=no
@@ -205,19 +205,19 @@ deband-iterations=2
 
 [anime-1080p]
 profile-desc="Optimal untuk anime 1080p dengan AI upscaling"
-glsl-shaders="~~/shaders/nnedi3-nns128-win8x4.hook;~~/shaders/ArtCNN_C4F32.glsl"
+glsl-shaders="~~/shaders/ArtCNN_C4F32_DS.glsl"
 deband=yes
 deband-iterations=4
 
 [anime-720p]
 profile-desc="Untuk anime 720p dengan aggressive upscaling"
-glsl-shaders="~~/shaders/nnedi3-nns128-win8x4.hook;~~/shaders/ArtCNN_C4F32.glsl"
+glsl-shaders="~~/shaders/ArtCNN_C4F32_DS.glsl"
 scale=ewa_lanczossharp
 deband=yes
 
 [low-quality-source]
 profile-desc="Untuk source berkualitas rendah (heavy denoise)"
-glsl-shaders="~~/shaders/nnedi3-nns128-win8x4.hook;~~/shaders/ArtCNN_C4F32.glsl"
+glsl-shaders="~~/shaders/ArtCNN_C4F32_DS.glsl"
 deband=yes
 deband-iterations=4
 deband-threshold=64
@@ -253,7 +253,7 @@ scale=ewa_lanczossharp
 cscale=ewa_lanczossharp
 scale-antiring=0.7
 cscale-antiring=0.7
-glsl-shaders="~~/shaders/nnedi3-nns128-win8x4.hook;~~/shaders/ArtCNN_C4F32.glsl"
+glsl-shaders="~~/shaders/ArtCNN_C4F32_DS.glsl"
 deband-iterations=4
 deband-threshold=48
 interpolation=yes
@@ -265,7 +265,7 @@ interpolation=yes
 [1080p-upscale]
 profile-cond=height>720 and height<=1080
 profile-desc="Auto-apply untuk 721p-1080p (ringan)"
-glsl-shaders="~~/shaders/ArtCNN_C4F32.glsl"
+glsl-shaders="~~/shaders/ArtCNN_C4F32_DS.glsl"
 
 [720p-upscale]
 profile-cond=height<=720
