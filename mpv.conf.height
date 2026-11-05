@@ -27,21 +27,25 @@ force-window=immediate
 
 
 ## ===================================================================
-## Video Output - D3D11 (stabil untuk Windows + RTX 4060)
+## Video Output - Vulkan + NVDEC (RTX 4060)
 ## ===================================================================
+## Vulkan dipilih karena kompilasi shader ArtCNN jauh lebih cepat saat cache
+## dingin (~13 detik vs ~40 detik di D3D11) dan puncak render per frame lebih rendah
+## (~16-21 ms vs ~24 ms); rata-rata per frame setara (~12-13 ms).
+## vulkan-device wajib dipin: mesin ini punya iGPU AMD selain RTX 4060.
 vo=gpu-next
-gpu-api=d3d11
-gpu-context=d3d11
-d3d11-adapter="NVIDIA GeForce RTX 4060"
+gpu-api=vulkan
+gpu-context=winvk
+vulkan-device="NVIDIA GeForce RTX 4060"
 
-## Hardware Decoding - pasangan yang benar untuk gpu-api=d3d11
-## Jangan pakai nvdec/cuda di backend D3D11; itu memicu error CUDA.
-hwdec=d3d11va
-## hwdec fallback ke software decode otomatis jika format tidak didukung GPU.
+## Hardware Decoding - nvdec zero-copy lewat interop CUDA<->Vulkan (khusus gpu-api=vulkan).
+## hwdec=vulkan (Vulkan Video) sudah diuji: lebih lambat dari nvdec, jadi tidak dipakai.
+## auto-safe sebagai fallback, lalu software decode jika format tidak didukung GPU.
+hwdec=nvdec,auto-safe
 
 ## Catatan:
-## Jika ingin uji Vulkan/NVDEC, jalankan:
-## mpv --profile=vulkan-nvdec "video.mkv"
+## Jika Vulkan bermasalah, kembali ke jalur D3D11 lama dengan:
+## mpv --profile=d3d11-fallback "video.mkv"
 
 ## GPU Shader Cache
 gpu-shader-cache-dir="~~/shader_cache"
@@ -189,12 +193,12 @@ deband=no
 scale=spline36
 cscale=spline36
 
-[vulkan-nvdec]
-profile-desc="Eksperimen untuk RTX 4060: Vulkan + NVDEC"
-gpu-api=vulkan
-gpu-context=winvk
-vulkan-device="NVIDIA GeForce RTX 4060"
-hwdec=nvdec,auto-safe
+[d3d11-fallback]
+profile-desc="Fallback RTX 4060: D3D11 + d3d11va (jalur lama). Jangan pakai nvdec/cuda di D3D11; memicu error CUDA"
+gpu-api=d3d11
+gpu-context=d3d11
+d3d11-adapter="NVIDIA GeForce RTX 4060"
+hwdec=d3d11va
 
 [max-quality]
 profile-desc="Maximum quality (berat)"
