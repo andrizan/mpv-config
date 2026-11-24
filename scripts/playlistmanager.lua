@@ -274,7 +274,10 @@ if settings.showamount == -1 then
     end
   end
 
-  settings.showamount = math.floor(playlist_h / fs)
+  -- libass lines are taller than the font size when glyphs fall back to another
+  -- font (the ○●▷ status symbols use DejaVu Sans: ~1.07x), so reserve 1.1x per
+  -- line or the last entries get cut off by the \clip below text_padding_y
+  settings.showamount = math.floor(playlist_h / (fs * 1.1))
 
   -- exclude the header line
   if settings.playlist_header ~= "" then
